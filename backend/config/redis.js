@@ -1,9 +1,11 @@
+require("dotenv").config();
+
 const Redis = require("ioredis");
 
 const redisConfig = {
-  host: "redis-12331.c301.ap-south-1-1.ec2.redns.redis-cloud.com",
-  port: 12331,
-  password: "cWpIz3AQeAIYldgdmLWJN3WqO6sHL8gT",
+  host: process.env.REDIS_HOST,
+  port: process.env.REDIS_PORT,
+  password: process.env.REDIS_PASS,
 };
 
 const pub = new Redis(redisConfig);
