@@ -1,19 +1,24 @@
 "use client";
+
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "../ui/button";
 import { useActionState, useState } from "react";
 import axios, { AxiosError } from "axios";
+import { googleSignIn } from "@/auth/authentic";
+import { useRouter } from "next/navigation";
+
 
 export function SignUp() {
     const [color, setColor] = useState("red");
-
+    const router = useRouter();
     async function sendFormData(prevState: string, formData: FormData) {
         try {
             const email = formData.get("email") as string;
             const password = formData.get("password") as string;
             const res = await axios.post("http://localhost:8000/api/register", { email, password });
             setColor("green");
+            router.push(`/room/${email}`)
             return res.data.message;
         } catch (err: unknown) {
             const error = err as AxiosError<{ error: string }>;
@@ -39,6 +44,12 @@ export function SignUp() {
                     {isPending ? "Submitting..." : "Submit"}
                 </Button>
             </form>
+
+            {/* Google Sign-In Form */}
+            <form action={googleSignIn}>
+                <Button type="submit">Sign In with Google</Button>
+            </form>
+
             <p style={{ color }}>{response}</p>
         </div>
     );
