@@ -2,75 +2,51 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { useActionState, useState } from "react";
+import { z } from "zod";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import axios, { AxiosError } from "axios";
-import { signIn, useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { signIn } from "next-auth/react";
+import { useState } from "react";
+
+const schema = z.object({
+    email: z.string().email({ message: "Invalid email format" }),
+    password: z.string().min(6, { message: "Password must be at least 6 characters" }),
+});
+
+type FormField = z.infer<typeof schema>;
 
 export function SignUp() {
-    const [color, setColor] = useState<'red' | 'green'>('red');
-    const router = useRouter();
-    const { data: session } = useSession();
+    const [res,setRes] = useState("");
+    const {
+        register,
+        handleSubmit,
+        setError,
+        formState: { errors, isSubmitting },
+    } = useForm<FormField>({ resolver: zodResolver(schema) });
 
-    // Effect to redirect after successful Google sign-in
-    useEffect(() => {
-        if (session?.user?.email) {
-            const userEmail = session.user.email;
-            router.push(`/room/${userEmail}`);
-        }
-    }, [session, router]);
-
-    async function sendFormData(prevState: string, formData: FormData) {
+    const onSubmit: SubmitHandler<FormField> = async (data) => {
         try {
-            // Use type assertion and provide fallback
-            const email = (formData.get("email") as string) ?? '';
-            const password = (formData.get("password") as string) ?? '';
-
-            // Validate inputs
-            if (!email || !password) {
-                throw new Error('Email and password are required');
-            }
-
-            // Register user
             const res = await axios.post("http://localhost:8000/api/register", {
-                email,
-                password
+                email: data.email,
+                password: data.password,
             });
 
-            // Automatically sign in after registration
-            const signInResult = await signIn("credentials", {
-                redirect: false,
-                email,
-                password
-            });
+            setRes(res.data.message);
 
-            // Check for sign-in errors
-            if (signInResult?.error) {
-                throw new Error(signInResult.error);
-            }
-
-            setColor("green");
-            router.push(`/room/${email}`);
-            return res.data.message || 'Registration successful';
-        } catch (err: unknown) {
-            const error = err as AxiosError<{ error: string }>;
-            setColor("red");
-            console.error(error);
-            return error.response?.data?.error || error.message || 'Registration failed';
-        }
-    }
-
-    async function handleGoogleSignIn() {
-        try {
-            await signIn("google");
-            // Note: Redirection is now handled by the useEffect hook
         } catch (error) {
-            console.error("Google Sign-In Error:", error);
+            const axiosError = error as AxiosError<{ error: string }>;
+            setError("root", { message: axiosError.response?.data?.error || "Something went wrong. Please try again." });
         }
-    }
+    };
 
-    const [response, formAction, isPending] = useActionState(sendFormData, "");
+    const googleSignUp = async () => {
+        try {
+            await signIn("google", { redirect: true, callbackUrl: "/dashboard" });
+        } catch (error) {
+            console.error("Google Sign-in failed", error);
+        }
+    };
 
     return (
         <div className="flex flex-col justify-center items-center h-[80vh] w-full gap-3">
@@ -78,38 +54,24 @@ export function SignUp() {
                 <p className="font-bold text-3xl">Signup page</p>
             </div>
 
-            <form action={formAction} className="flex flex-col gap-2 w-full max-w-md">
+            <form className="flex flex-col gap-2 w-full max-w-md" onSubmit={handleSubmit(onSubmit)}>
                 <Label htmlFor="email">Email</Label>
-                <Input
-                    className="w-full"
-                    type="email"
-                    id="email"
-                    name="email"
-                    placeholder="Email"
-                    required
-                />
+                <Input {...register("email")} className="w-full" type="email" id="email" placeholder="Email" required />
+                {errors.email && <p className="text-red-500">{errors.email.message}</p>}
 
                 <Label htmlFor="password">Password</Label>
-                <Input
-                    className="w-full"
-                    type="password"
-                    id="password"
-                    name="password"
-                    placeholder="Password"
-                    required
-                />
+                <Input {...register("password")} className="w-full" type="password" id="password" placeholder="Password" required />
+                {errors.password && <p className="text-red-500">{errors.password.message}</p>}
 
-                <Button type="submit" disabled={isPending}>
-                    {isPending ? "Submitting..." : "Submit"}
+                <Button disabled={isSubmitting} type="submit">
+                    {isSubmitting ? "Loading..." : "Submit"}
                 </Button>
+                {errors.root && <p className="text-red-500">{errors.root.message}</p>}
             </form>
 
-            {/* Google Sign-In Button */}
-            <Button onClick={handleGoogleSignIn} variant="outline">
-                Sign In with Google
-            </Button>
+            <Button onClick={googleSignUp}>Sign in with Google</Button>
 
-            <p style={{ color }}>{response}</p>
+            <p className="text-green-500">{res}</p>
         </div>
     );
 }

@@ -13,6 +13,7 @@ model User {
   password       String?
   name           String?
   emailVerified  DateTime?
+  isVerified     Boolean?
   image          String?
   accounts       Account[]
   createdAt      DateTime       @default(now())

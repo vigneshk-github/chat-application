@@ -1,16 +1,17 @@
-import { NextResponse, NextRequest } from "next/server";
+import { NextResponse } from "next/server";
+import { auth } from "./auth"; // Ensure you have `auth.ts` configured for NextAuth
 
-export function middleware(req: NextRequest) {
-  const token = req.cookies.get("token")?.value;
+export async function middleware(req: Request) {
+  const session = await auth(); // Get the session
 
-  if (!token) {
-    return NextResponse.redirect(new URL("/login", req.url));
+  if (!session) {
+    return NextResponse.redirect(new URL("/login", req.url)); // Redirect unauthenticated users
   }
 
-  return NextResponse.next();
+  return NextResponse.next(); // Allow access if authenticated
 }
 
+// Define protected routes
 export const config = {
-  matcher: ["/chat", "/room/:slug*"], // Protect specific routes, including dynamic ones
+  matcher: ["/chat", "/room/:slug*", "/dashboard"], // Secure these routes
 };
-

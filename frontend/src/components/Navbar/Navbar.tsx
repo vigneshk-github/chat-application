@@ -3,7 +3,6 @@ import Link from "next/link";
 import { Button } from "../ui/button";
 import { googleSignOut } from "@/auth/authentic";
 
-
 type User = {
     email?: string;
     name?: string;

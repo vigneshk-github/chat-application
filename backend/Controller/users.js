@@ -4,14 +4,14 @@ const { PrismaClient } = require("@prisma/client");
 require("dotenv").config();
 const prisma = new PrismaClient();
 
-async function getUsers(req,res){
-    try{
-        const users = await prisma.user.findMany({})
-        res.status(200).json({ users });
-    }catch(err){
-        console.log(err);
-        res.status(500).json({"Error":err})
-    }
+async function getUsers(req, res) {
+  try {
+    const users = await prisma.user.findMany({});
+    res.status(200).json({ users });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ Error: err });
+  }
 }
 
 async function getId(req, res) {
@@ -28,7 +28,51 @@ async function getId(req, res) {
   }
 }
 
+async function checkUserExists(req, res) {
+  try {
+    const { email } = req.body;
+    const userDetail = await prisma.user.findFirst({
+      where: { email },
+    });
+    console.log(userDetail);
+    res.status(200).json({ userDetail });
+  } catch (err) {
+    res.status(500).json({ err });
+  }
+}
 
+async function googleSignUp(req, res) {
+  try {
+    const { email, name, image } = req.body;
+
+    let user = await prisma.user.findUnique({ where: { email } });
+
+    if (!user) {
+      const user = await prisma.user.create({
+        data: {
+          email: "vigneshten5@gmail.com",
+          name: "Vignesh Kamatam",
+          image: undefined,
+          emailVerified: new Date(),
+          accounts: {
+            create: [
+              {
+                provider: "google",
+                providerAccountId: "vigneshten5@gmail.com",
+                type: "oauth", // Ensure type is correctly provided
+              },
+            ],
+          },
+        },
+      });
+    }
+
+    res.status(200).json({ user });
+  } catch (err) {
+    console.error("Google Signup Error:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
 
 async function getConv(req, res) {
   try {
@@ -63,5 +107,4 @@ async function getConv(req, res) {
   }
 }
 
-
-module.exports = {getUsers,getConv,getId}
+module.exports = { getUsers, getConv, getId, checkUserExists, googleSignUp };

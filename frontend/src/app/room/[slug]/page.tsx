@@ -21,7 +21,7 @@ export default function Room() {
         async function fetchUsers() {
             try {
                 const response = await axios.get<{ users: User[] }>(
-                    "http://localhost:8000/api/getusers"
+                    "http://localhost:8000/api/getallusers"
                 );
                 setUsers(response.data.users.filter((u) => u.email !== decodedEmail));
             } catch (err) {
