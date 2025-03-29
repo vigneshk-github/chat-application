@@ -21,8 +21,8 @@ export default function Chatting({ sender, receiver }: ChattingProps) {
 
         async function fetchUserIds() {
             try {
-                const senderRes = await axios.post(`${process.env.BACKEND_URL}/api/getId`, { email: sender });
-                const receiverRes = await axios.post(`${process.env.BACKEND_URL}/api/getId`, { email: receiver });
+                const senderRes = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/getId`, { email: sender });
+                const receiverRes = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/getId`, { email: receiver });
                 setSenderId(senderRes.data.id);
                 setRecId(receiverRes.data.id);
                 return { senderId: senderRes.data.id, recId: receiverRes.data.id };
@@ -33,7 +33,7 @@ export default function Chatting({ sender, receiver }: ChattingProps) {
 
         async function fetchMessages() {
             try {
-                const res = await axios.post(`${process.env.BACKEND_URL}/api/conversation`, { to: receiver, from: sender });
+                const res = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/conversation`, { to: receiver, from: sender });
                 if (res.data?.messages) {
                     setMessages(res.data.messages.map((msg: { userId: string; content: string }) => ({
                         senderId: msg.userId,

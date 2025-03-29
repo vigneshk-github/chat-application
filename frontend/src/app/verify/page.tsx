@@ -19,7 +19,7 @@ export default function Verify() {
 
         async function verifyEmail() {
             try {
-                const res = await axios.get(`${process.env.BACKEND_URL}/api/verify?token=${token}`);
+                const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/verify?token=${token}`);
 
                 if (res.status === 200) {
                     setMessage("✅ Email verified! Redirecting...");
@@ -30,7 +30,7 @@ export default function Verify() {
             } catch (error) {
                 setMessage("❌ An error occurred during verification.");
                 console.log(error);
-                
+
             }
         }
 

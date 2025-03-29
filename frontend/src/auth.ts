@@ -11,7 +11,7 @@ export const config = {
       async profile(profile) {
         try {
           const userData = await axios.post(
-            `${process.env.BACKEND_URL}/api/googlesignup`,
+            `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/googlesignup`,
             {
               email: profile.email,
               name: profile.name,
@@ -47,7 +47,7 @@ export const config = {
         try {
           console.log("Hello");
           const res = await axios.post(
-            `${process.env.BACKEND_URL}/api/login`,
+            `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/login`,
             {
               email: credentials.email,
               password: credentials.password,
@@ -74,16 +74,19 @@ export const config = {
       if (user.email) {
         try {
           const res = await axios.post(
-            `${process.env.BACKEND_URL}/api/userexistsbyemail`,
+            `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/userexistsbyemail`,
             {
               email: user.email,
             }
           );
 
           if (res.data.exists === false) {
-            await axios.post(`${process.env.BACKEND_URL}/api/register`, {
-              email: user.email,
-            });
+            await axios.post(
+              `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/register`,
+              {
+                email: user.email,
+              }
+            );
           }
         } catch (err: unknown) {
           if (axios.isAxiosError(err) && err.response?.data?.error) {

@@ -17,7 +17,7 @@ const schema = z.object({
 type FormField = z.infer<typeof schema>;
 
 export function SignUp() {
-    const [res,setRes] = useState("");
+    const [res, setRes] = useState("");
     const {
         register,
         handleSubmit,
@@ -27,7 +27,10 @@ export function SignUp() {
 
     const onSubmit: SubmitHandler<FormField> = async (data) => {
         try {
-            const res = await axios.post(`${process.env.BACKEND_URL}/api/register`, {
+            console.log("Backend URL:", process.env.NEXT_PUBLIC_BACKEND_URL);
+
+
+            const res = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/register`, {
                 email: data.email,
                 password: data.password,
             });

@@ -21,7 +21,7 @@ export default function Room() {
         async function fetchUsers() {
             try {
                 const response = await axios.get<{ users: User[] }>(
-                    `${process.env.BACKEND_URL}/api/getallusers`
+                    `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/getallusers`
                 );
                 setUsers(response.data.users.filter((u) => u.email !== decodedEmail));
             } catch (err) {
@@ -46,7 +46,7 @@ export default function Room() {
             {/* Left Side - Chat */}
             <div className="w-2/3 p-4">
                 {selectedUser ? (
-                    <Chatting sender={decodedEmail}  receiver={selectedUser.email} />
+                    <Chatting sender={decodedEmail} receiver={selectedUser.email} />
                 ) : (
                     <p>Select a user to start chatting</p>
                 )}
