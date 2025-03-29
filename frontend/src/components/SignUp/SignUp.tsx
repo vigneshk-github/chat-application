@@ -27,7 +27,7 @@ export function SignUp() {
 
     const onSubmit: SubmitHandler<FormField> = async (data) => {
         try {
-            const res = await axios.post("http://localhost:8000/api/register", {
+            const res = await axios.post(`${process.env.BACKEND_URL}/api/register`, {
                 email: data.email,
                 password: data.password,
             });

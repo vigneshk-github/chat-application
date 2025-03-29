@@ -34,7 +34,7 @@ async function Register(req, res) {
     });
 
     // Email verification link
-    const verificationLink = `http://localhost:3000/verify?token=${token}`;
+    const verificationLink = `${process.env.FRONTEND_URL}/verify?token=${token}`;
 
     // Send verification email
     await transporter.sendMail({
