@@ -5,11 +5,12 @@ import { Card, CardContent } from "@/components/ui/card";
 import Chatting from "@/components/Chatting/Chatting";
 import { socket } from "@/app/socket";
 import { useParams } from 'next/navigation';
-import { Avatar, AvatarFallback} from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { Search, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import GptChat from "@/app/gpt/page";
 
 interface User {
     id: number;
@@ -32,8 +33,16 @@ export default function Room() {
                     `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/getallusers`
                 );
                 const filteredUsers = response.data.users.filter((u) => u.email !== decodedEmail);
-                setUsers(filteredUsers);
-                setFilteredUsers(filteredUsers);
+
+                // Add GPT as a special user
+                const gptUser: User = {
+                    id: -1, // Use a special ID that won't conflict with regular users
+                    email: "AI Assistant" // Display name for GPT
+                };
+
+                // Add GPT user to the beginning of the list
+                setUsers([gptUser, ...filteredUsers]);
+                setFilteredUsers([gptUser, ...filteredUsers]);
             } catch (err) {
                 console.error(err);
             }
@@ -94,7 +103,7 @@ export default function Room() {
     };
 
     return (
-        <div className="flex flex-col md:flex-row h-screen bg-gray-50">
+        <div className="flex flex-col md:flex-row h-[calc(100vh-4rem)] bg-gray-50">
             {/* Left Side - User List */}
             {showSidebar && (
                 <div className="w-full md:w-1/3 lg:w-1/4 border-r bg-white shadow-sm">
@@ -111,7 +120,7 @@ export default function Room() {
                             />
                         </div>
                     </div>
-                    <ScrollArea className="h-[calc(100vh-130px)]">
+                    <ScrollArea className="sm:h-[calc(100vh-13rem)] mobile-scroll-area">
                         <div className="p-2">
                             {filteredUsers.length > 0 ? (
                                 filteredUsers.map((user) => (
@@ -149,9 +158,10 @@ export default function Room() {
             )}
 
             {/* Right Side - Chat */}
+            {/* Right Side - Chat */}
             <div className={`${showSidebar ? 'hidden md:flex' : 'flex'} flex-1 items-center justify-center bg-gray-100`}>
                 {selectedUser ? (
-                    <div className="w-full h-full flex flex-col">
+                    <div className="w-full h-[calc(100vh-4rem)] flex flex-col">
                         {/* Mobile header with back button */}
                         <div className="md:hidden flex items-center p-3 bg-white border-b">
                             <Button
@@ -172,15 +182,20 @@ export default function Room() {
                             </div>
                         </div>
 
-                        <div className="flex-1 h-full">
-                            <Chatting sender={decodedEmail} receiver={selectedUser.email} />
+                        <div className="flex-1 h-[calc(100vh-4rem)]">
+                            {selectedUser.id === -1 ? (
+                                <GptChat  />
+                            ) : (
+                                <Chatting sender={decodedEmail} receiver={selectedUser.email} />
+                            )}
                         </div>
                     </div>
                 ) : (
                     <div className="text-center p-8 bg-white rounded-lg shadow-sm max-w-md">
                         <h3 className="text-xl font-semibold text-gray-800 mb-2">Welcome to Chat App</h3>
                         <p className="text-gray-600">
-                            Select a user from the sidebar to start a conversation.
+                            Select a user from the sidebar to start a conversation,
+                            or choose AI Assistant to chat with our GPT assistant.
                         </p>
                     </div>
                 )}

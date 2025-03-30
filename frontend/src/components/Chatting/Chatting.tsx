@@ -147,7 +147,7 @@ export default function Chatting({ sender, receiver }: ChattingProps) {
     const messageGroups = groupMessagesByDate();
 
     return (
-        <div className="flex flex-col h-full w-full bg-white rounded-lg shadow-sm overflow-hidden overflow-x-hidden">
+        <div className="flex flex-col h-[calc(100vh-4rem)] w-full bg-white rounded-lg shadow-sm overflow-hidden overflow-x-hidden">
             <div className="flex items-center p-4 border-b">
                 <Avatar className="h-10 w-10 mr-3 bg-blue-500 text-white">
                     <AvatarFallback>{getInitials(receiver)}</AvatarFallback>
@@ -166,11 +166,11 @@ export default function Chatting({ sender, receiver }: ChattingProps) {
             {/* Messages */}
             <div className="flex-1 overflow-y-auto overflow-x-hidden p-4" ref={scrollAreaRef} onScroll={handleScroll}>
                 {isLoading ? (
-                    <div className="flex justify-center items-center h-full">
+                    <div className="flex justify-center items-center h-[calc(100vh-4rem)]">
                         <p className="text-gray-500">Loading messages...</p>
                     </div>
                 ) : messages.length === 0 ? (
-                    <div className="flex justify-center items-center h-full">
+                        <div className="flex justify-center items-center h-[calc(100vh-4rem)]">
                         <p className="text-gray-500">No messages yet. Start the conversation!</p>
                     </div>
                 ) : (
