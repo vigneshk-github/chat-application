@@ -6,8 +6,9 @@ import { z } from "zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios, { AxiosError } from "axios";
-import { signIn } from "next-auth/react";
-import { useState } from "react";
+import { signIn, useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 const schema = z.object({
     email: z.string().email({ message: "Invalid email format" }),
@@ -18,12 +19,21 @@ type FormField = z.infer<typeof schema>;
 
 export function SignUp() {
     const [res, setRes] = useState("");
+    const router = useRouter();
+    const { data: session, status } = useSession();
     const {
         register,
         handleSubmit,
         setError,
         formState: { errors, isSubmitting },
     } = useForm<FormField>({ resolver: zodResolver(schema) });
+
+
+    useEffect(() => {
+        if (status === "authenticated" && session?.user?.email) {
+            router.push(`/room/${session.user.email}`);
+        }
+    }, [status, session, router]);
 
     const onSubmit: SubmitHandler<FormField> = async (data) => {
         try {
@@ -45,7 +55,12 @@ export function SignUp() {
 
     const googleSignUp = async () => {
         try {
-            await signIn("google", { redirect: true, callbackUrl: "/dashboard" });
+            const signInResult = await signIn("google", { redirect: false });
+
+            if (signInResult?.error) {
+                console.error("Google Sign-in failed:", signInResult.error);
+                return;
+            }
         } catch (error) {
             console.error("Google Sign-in failed", error);
         }
