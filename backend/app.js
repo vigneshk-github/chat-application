@@ -9,8 +9,9 @@ const app = express();
 // Middleware
 app.use(
   cors({
-    origin: "*",
+    origin: "https://chatting-application-socket.vercel.app", // Replace with your frontend URL
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE"],
   })
 );
 

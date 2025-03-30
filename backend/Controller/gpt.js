@@ -31,7 +31,7 @@ async function chatwithgemini(req, res) {
 
 
   const result = await chatSession.sendMessage(
-    `Please provide a short and concise answer noe answer this prompt ${userInput} `
+    `Please provide a short and concise answer now answer this prompt ${userInput} `
   );
   const resText = JSON.stringify(result.response.text());
 

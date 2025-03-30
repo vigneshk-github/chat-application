@@ -7,7 +7,11 @@ const socketHandler = require("./sockets/socketHandler");
 const server = http.createServer(app);
 
 const io = socketIo(server, {
-  cors: { origin: "*", credentials: true },
+  cors: {
+    origin: "https://chatting-application-socket.vercel.app", // Explicitly allow frontend
+    methods: ["GET", "POST"],
+    credentials: true,
+  },
 });
 
 // Initialize WebSockets
