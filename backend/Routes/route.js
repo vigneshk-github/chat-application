@@ -8,6 +8,7 @@ const {
   googleSignUp,
 } = require("../Controller/users");
 const { Login, Register, VerifyEmail } = require("../Controller/auth");
+const { chatwithgemini } = require("../Controller/gpt");
 
 router.post("/login", Login);
 router.post("/register", Register);
@@ -18,5 +19,7 @@ router.get("/getallusers", getUsers);
 router.post("/getId", getId);
 
 router.post("/conversation", getConv);
+
+router.post("/gemini",chatwithgemini);
 
 module.exports = router;
