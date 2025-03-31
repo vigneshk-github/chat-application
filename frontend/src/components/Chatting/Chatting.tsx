@@ -178,7 +178,7 @@ export default function Chatting({ sender, receiver }: ChattingProps) {
                         <p className="text-gray-500">No messages yet. Start the conversation!</p>
                     </div>
                 ) : show === true ? (
-                    <VideoCall sender={senderId} receiver={recId} />
+                    <VideoCall sender={sender} receiver={receiver} />
                 ) :
                     (
                         <div className="space-y-6">
