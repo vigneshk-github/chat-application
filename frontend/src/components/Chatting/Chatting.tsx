@@ -3,10 +3,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { socket } from "@/app/socket";
 import axios from "axios";
-import { Send, XCircle } from "lucide-react";
+import { Send, XCircle, PhoneCall } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { format } from "date-fns";
 import { Separator } from "@/components/ui/separator";
+import VideoCall from "../VideoCall/VideoCall";
 
 interface ChattingProps {
     sender: string;
@@ -28,6 +29,7 @@ export default function Chatting({ sender, receiver }: ChattingProps) {
     const messageEndRef = useRef<HTMLDivElement>(null);
     const scrollAreaRef = useRef<HTMLDivElement>(null);
     const [shouldScrollToBottom, setShouldScrollToBottom] = useState(true);
+    const [show, setShow] = useState(false);
 
     const scrollToBottom = () => {
         if (shouldScrollToBottom && messageEndRef.current) {
@@ -146,6 +148,7 @@ export default function Chatting({ sender, receiver }: ChattingProps) {
 
     const messageGroups = groupMessagesByDate();
 
+
     return (
         <div className="flex flex-col h-[calc(100vh-4rem)] w-full bg-white rounded-lg shadow-sm overflow-hidden overflow-x-hidden">
             <div className="flex items-center p-4 border-b">
@@ -161,6 +164,7 @@ export default function Chatting({ sender, receiver }: ChattingProps) {
                 <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-500 hover:text-gray-800">
                     <XCircle size={20} />
                 </Button>
+                <PhoneCall onClick={() => setShow(!show)} color="blue" size={24} />
             </div>
 
             {/* Messages */}
@@ -170,50 +174,53 @@ export default function Chatting({ sender, receiver }: ChattingProps) {
                         <p className="text-gray-500">Loading messages...</p>
                     </div>
                 ) : messages.length === 0 ? (
-                        <div className="flex justify-center items-center h-[calc(100vh-4rem)]">
+                    <div className="flex justify-center items-center h-[calc(100vh-4rem)]">
                         <p className="text-gray-500">No messages yet. Start the conversation!</p>
                     </div>
-                ) : (
-                    <div className="space-y-6">
-                        {Object.entries(messageGroups).map(([date, msgs]) => (
-                            <div key={date} className="space-y-4">
-                                <div className="flex items-center justify-center">
-                                    <Separator className="flex-grow" />
-                                    <span className="mx-2 text-xs text-gray-500">{date}</span>
-                                    <Separator className="flex-grow" />
-                                </div>
-                                {msgs.map((msg, index) => (
-                                    <div
-                                        key={index}
-                                        className={`flex ${msg.senderId === senderId ? "justify-end" : "justify-start"}`}
-                                    >
-                                        {msg.senderId !== senderId && (
-                                            <Avatar className="h-8 w-8 mr-2 mt-1 bg-blue-500 text-white">
-                                                <AvatarFallback>{getInitials(receiver)}</AvatarFallback>
-                                            </Avatar>
-                                        )}
-                                        <div className={`max-w-[80%] break-words space-y-1 ${msg.senderId === senderId ? "items-end" : "items-start"}`}>
-                                            <div
-                                                className={`px-4 py-2 rounded-2xl break-words ${msg.senderId === senderId
+                ) : show === true ? (
+                    <VideoCall sender={senderId} receiver={recId} />
+                ) :
+                    (
+                        <div className="space-y-6">
+                            {Object.entries(messageGroups).map(([date, msgs]) => (
+                                <div key={date} className="space-y-4">
+                                    <div className="flex items-center justify-center">
+                                        <Separator className="flex-grow" />
+                                        <span className="mx-2 text-xs text-gray-500">{date}</span>
+                                        <Separator className="flex-grow" />
+                                    </div>
+                                    {msgs.map((msg, index) => (
+                                        <div
+                                            key={index}
+                                            className={`flex ${msg.senderId === senderId ? "justify-end" : "justify-start"}`}
+                                        >
+                                            {msg.senderId !== senderId && (
+                                                <Avatar className="h-8 w-8 mr-2 mt-1 bg-blue-500 text-white">
+                                                    <AvatarFallback>{getInitials(receiver)}</AvatarFallback>
+                                                </Avatar>
+                                            )}
+                                            <div className={`max-w-[80%] break-words space-y-1 ${msg.senderId === senderId ? "items-end" : "items-start"}`}>
+                                                <div
+                                                    className={`px-4 py-2 rounded-2xl break-words ${msg.senderId === senderId
                                                         ? "bg-blue-500 text-white rounded-br-none"
                                                         : "bg-gray-100 text-black rounded-bl-none"
-                                                    }`}
-                                            >
-                                                {msg.message}
+                                                        }`}
+                                                >
+                                                    {msg.message}
+                                                </div>
+                                                {msg.timestamp && (
+                                                    <span className="text-xs text-gray-500 px-1">
+                                                        {formatMessageDate(msg.timestamp)}
+                                                    </span>
+                                                )}
                                             </div>
-                                            {msg.timestamp && (
-                                                <span className="text-xs text-gray-500 px-1">
-                                                    {formatMessageDate(msg.timestamp)}
-                                                </span>
-                                            )}
                                         </div>
-                                    </div>
-                                ))}
-                            </div>
-                        ))}
-                        <div ref={messageEndRef} />
-                    </div>
-                )}
+                                    ))}
+                                </div>
+                            ))}
+                            <div ref={messageEndRef} />
+                        </div>
+                    )}
             </div>
 
             {/* Message Input */}
