@@ -2,7 +2,7 @@ const prisma = require("../config/prisma");
 
 const socketHandler = (io) => {
   const users = {}; // Stores { email -> socketId }
-
+  const peerIds = {};
   io.on("connection", (socket) => {
     console.log("User connected:", socket.id);
 
@@ -10,6 +10,27 @@ const socketHandler = (io) => {
     socket.on("register", (email) => {
       users[email] = socket.id;
       console.log(`${email} registered with socket ID: ${socket.id}`);
+    });
+
+    socket.on("registerPeer", ({ email, peerId }) => {
+      peerIds[email] = peerId;
+      console.log(peerId);
+    });
+
+    socket.on("requestVideoCall", ({ sender, receiver }) => {
+      const receiverSocketId = users[receiver];
+      if (receiverSocketId) {
+        io.to(receiverSocketId).emit("incomingVideoCall", {
+          peerId: peerIds[sender],
+        });
+      }
+    });
+
+    socket.on("endCall", ({ sender, receiver }) => {
+      const receiverSocketId = users[receiver];
+      if (receiverSocketId) {
+        io.to(receiverSocketId).emit("callEnded");
+      }
     });
 
     // Handle private messages
@@ -75,6 +96,7 @@ const socketHandler = (io) => {
       );
       if (disconnectedUser) {
         delete users[disconnectedUser];
+        delete peerIds[disconnectedUser]; // Remove peerId on disconnect
       }
     });
   });
