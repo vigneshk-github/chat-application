@@ -59,18 +59,23 @@ const GptChat = () => {
 
         try {
             // Send request to API
-            const response = await axios.post<{ response: string }>(
-                `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/gemini`,
-                { userInput: currentInput }
-            );
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/gemini`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ userInput: currentInput })
+            });
+
+            const data = await response.json();
 
             // Create GPT message
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const gptMessage: any = {
+            const gptMessage = {
                 sender: "gpt",
-                content: response.data,
+                content: data,
                 timestamp: new Date()
             };
+
 
             // Add GPT response to messages
             setMessages(prev => [...prev, gptMessage]);
