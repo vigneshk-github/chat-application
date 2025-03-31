@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { socket } from "@/app/socket";
 import axios from "axios";
-import { Send, XCircle, PhoneCall } from "lucide-react";
+import { Send, PhoneCall } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { format } from "date-fns";
 import { Separator } from "@/components/ui/separator";
