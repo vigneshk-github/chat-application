@@ -161,9 +161,6 @@ export default function Chatting({ sender, receiver }: ChattingProps) {
                         {isLoading ? "Loading..." : "Online"}
                     </p>
                 </div>
-                <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-500 hover:text-gray-800">
-                    <XCircle size={20} />
-                </Button>
                 <PhoneCall onClick={() => setShow(!show)} color="blue" size={24} />
             </div>
 
