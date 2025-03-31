@@ -66,7 +66,7 @@ export function Login() {
             <div className="flex mb-10">
                 <p className="font-bold text-3xl">Login page</p>
             </div>
-            <form className="flex flex-col gap-2 w-full max-w-md" onSubmit={handleSubmit(onSubmit)}>
+            <form className="flex flex-col gap-2 w-full max-w-md px-10" onSubmit={handleSubmit(onSubmit)}>
                 <Label htmlFor="email">Email</Label>
                 <Input {...register("email")} className="w-full" type="email" id="email" name="email" placeholder="Email" required />
                 {errors.email && <div className="text-red-500">{errors.email.message}</div>}

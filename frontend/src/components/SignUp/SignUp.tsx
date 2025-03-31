@@ -72,7 +72,7 @@ export function SignUp() {
                 <p className="font-bold text-3xl">Signup page</p>
             </div>
 
-            <form className="flex flex-col gap-2 w-full max-w-md" onSubmit={handleSubmit(onSubmit)}>
+            <form className="flex flex-col gap-2 w-full max-w-md px-10" onSubmit={handleSubmit(onSubmit)}>
                 <Label htmlFor="email">Email</Label>
                 <Input {...register("email")} className="w-full" type="email" id="email" placeholder="Email" required />
                 {errors.email && <p className="text-red-500">{errors.email.message}</p>}
